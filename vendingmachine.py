@@ -38,110 +38,170 @@ def main():
       },  
    }  
   
- # Printing the available categories to the user  
-   print("Categories:")  
-   for category in menu_items.keys():  
-      print(category)  
+   # Print the welcome message  
+   print("\n************************************")  
+   print("*       WELCOME TO THE      *")  
+   print("*      VENDING MACHINE      *")  
+   print("************************************")  
+   print()  
   
-   # Initializing user's balance to $0.00  
+   # Print the available categories to the user  
+   print("-------------------------------")  
+   print("      CATEGORIES       ")  
+   print("-------------------------------")  
+   for category in menu_items.keys():  
+      print(f"* {category}")  
+   print("-------------------------------")  
+   print()  
+  
+   # Initialize the user's balance to $0.00  
    balance = 0.0  
   
-   # Initializing user's purchase history  
+   # Initialize the user's purchase history  
    purchase_history = []  
   
-   # Loop to prompt the user for input until they choose to quit  
+   # Main Loop to prompt the user for input until they choose to quit  
    while True:  
       # Prompt the user to select a category or deposit money  
-      user_input = input("\nPlease select a category (or 'q' to quit, 'd' to deposit money, 'h' to view purchase history): ")  
+      user_input = input("\n-------------------------------\n"  
+                  "      SELECT AN OPTION    \n"  
+                  "-------------------------------\n"  
+                  "1. Select a category\n"  
+                  "2. Deposit money\n"  
+                  "3. View purchase history\n"  
+                  "4. Quit\n"  
+                  "-------------------------------\n"  
+                  "Enter your choice: ")  
   
-      # If the user decides to quit, print a goodbye message and exit the program  
-      if user_input.lower() == 'q':  
-        print("Thank You, Please visit again!")  
+      # If the user chooses to quit, print a goodbye message and exit the program  
+      if user_input == "4":  
+        print("\n************************************")  
+        print("*      THANK YOU FOR USING    *")  
+        print("*      THE VENDING MACHINE    *")  
+        print("************************************")  
         break  
   
-      # If user decides to deposit money, ask them to enter the amount  
-      elif user_input.lower() == 'd':  
+      # If the user chooses to deposit money, ask  them to enter the amount  
+      elif user_input == "2":  
         try:  
            # Attempt to convert the user's input to a float  
            deposit_amount = float(input("Enter the amount to deposit: $"))  
   
-           # Check if deposit amount is negative  
+           # Check if the deposit amount is negative  
            if deposit_amount < 0:  
               print("Invalid deposit amount. Please enter a positive number.")  
            else:  
-              # Adding the amount deposited to the user's balance  
+              # Add the deposit amount to the user's balance  
               balance += deposit_amount  
-              print(f"Your new balance is: ${balance:.2f}")  
+              print(f"\nYour new balance is: ${balance:.2f}")  
         except ValueError:  
-           # If the user's input cannot be converted to a float, print an error message  
+           # If the user's input can't be converted to a float, print an error message  
            print("Invalid input. Please enter a valid number.")  
   
-      # If user chooses to view their purchase history, print the list of previous purchases  
-      elif user_input.lower() == 'h':  
+      # If the user selects to view their purchase history, print the list of previous purchases  
+      elif user_input == "3":  
         if len(purchase_history) == 0:  
-           print("You have not made any purchases yet.")  
+           print("\nYou have not made any purchases yet :/")  
         else:  
-           print("Purchase History:")  
+           print("\n-------------------------------")  
+           print("      PURCHASE HISTORY    ")  
+           print("-------------------------------")  
            total_amount = 0.0  
            for i, purchase in enumerate(purchase_history):  
               print(f"{i+1}. {purchase['name']} - ${purchase['price']}")  
               total_amount += purchase['price']  
-           print(f"Total Amount: ${total_amount:.2f}")  
+           print(f"\nTotal Amount: ${total_amount:.2f}")  
+           print("-------------------------------")  
   
-      # If user selects a category, print the menu items listed in that category  
-      elif user_input in menu_items.keys():  
-        selected_category = menu_items[user_input]  
-        print(f"\n{user_input} Menu:")  
-        for key, value in selected_category.items():  
-           print(f"{key}. {value['name']} - ${value['price']}")  
+      # If the user selects a category, print the menu items in that category  
+      elif user_input == "1":  
+        print("\n-------------------------------")  
+        print("      SELECT A CATEGORY    ")  
+        print("-------------------------------")  
+        for i, category in enumerate(menu_items.keys()):  
+           print(f"{i+1}. {category}")  
+        print("-------------------------------")  
+        category_input = input("Enter the number of your chosen category: ")  
+        if category_input.isdigit() and 1 <= int(category_input) <= len(menu_items):  
+           selected_category = list(menu_items.keys())[int(category_input) - 1]  
+           print(f"\n-------------------------------")  
+           print(f"      {selected_category.upper()} MENU    ")  
+           print("-------------------------------")  
+           for key, value in menu_items[selected_category].items():  
+              print(f"{key}. {value['name']} - ${value['price']}")  
+           print("-------------------------------")  
   
-        # Ask the user to select an item from the category  
-        while True:  
-           item_input = input("\nKindly select an item (or 'b' to go back): ")  
+           # Prompt the user to select an item from the category  
+           while True:  
+              item_input = input("\n-------------------------------\n"  
+                          "      SELECT AN ITEM    \n"  
+                          "-------------------------------\n"  
+                          "Enter the number of your chosen item, or 'b' to go back: ")  
   
-           # If the user chooses to go back, break out of the inner loop  
-           if item_input.lower() == 'b':  
-              break  
+              # If the user chooses to go back, break out of the inner loop  
+              if item_input.lower() == 'b':  
+                break  
   
-           # If user selects an item, check if they have sufficient money  
-           elif item_input in selected_category.keys():  
-              selected_item = selected_category[item_input]  
-              if balance >= selected_item['price']:  
-                # If user has sufficient funds, check availability of item  
-                if selected_item['stock'] > 0:  
-                   # Subtracting the item's price from user's balance  
-                   balance -= selected_item['price']  
-                   # Decrementing the item's stock level  
-                   selected_item['stock'] -= 1  
-                   # Printing a message to confirm the purchase  
-                   print(f"You have purchased {selected_item['name']}. Your new available balance is: ${balance:.2f}")  
-                   # Printing a message to confirm the item has been dispensed  
-                   print(f"{selected_item['name']} has been dispensed. Kindly collect your item from the dispenser.")  
-                   # Print the remaining stock level  
-                   print(f"Remaining stock: {selected_item['stock']}")  
-                   # Add the purchased item to user's purchase history  
-                   purchase_history.append(selected_item)
+              # If the user selects an item, check if they have sufficient funds  
+              elif item_input in menu_items[selected_category].keys():  
+                selected_item = menu_items[selected_category][item_input]  
+                if balance >= selected_item['price']:  
+                   # If the user has sufficient funds, check if the item is in stock  
+                   if selected_item['stock'] > 0:  
+                      # Subtract the item's price from the user's balance  
+                      balance -= selected_item['price']  
+                      # Decrement the item's stock level  
+                      selected_item['stock'] -= 1  
+                      # Print a message to confirm the purchase  
+                      print(f"\nYou have purchased {selected_item['name']}. Your new balance is: ${balance:.2f}")  
+                      # Print a message to confirm the item has been dispensed  
+                      print(f"{selected_item['name']} has been dispensed. Please collect your item from the dispenser.")  
+                      # Print the remaining stock level  
+                      print(f"Remaining stock: {selected_item['stock']}")  
+                      # Add the purchased item to the user's purchase history  
+                      purchase_history.append(selected_item)  
   
-                   # If user's balance is greater than $0.00, prompt them to receive their change  
-                   if balance > 0:  
-                      print("Would you like to collect your change? (y/n)")  
-                      change_input = input().lower()  
-                      if change_input == 'y':  
-                        # If user decides to receive their change, print the amount and reset their balance to $0.00  
-                        print(f"Kindly collect your change: ${balance:.2f}")  
-                        balance = 0.0  
+                      # If the user's balance is greater than $0.00, prompt them to receive their change  
+                      if balance > 0:  
+                        print("\n-------------------------------")  
+                        print("      RECEIVE CHANGE    ")  
+                        print("-------------------------------")  
+                        print("Would you like to receive your change? (y/n)")  
+                        change_input = input().lower()  
+                        if change_input == 'y':  
+                           # If the user chooses to receive their change, print the amount and reset their balance to $0.00  
+                           print(f"\nHere is your change: ${balance:.2f}")  
+                           balance = 0.0  
+                   else:  
+                      # If the item is out of stock, print an error message  
+                      print("\n-------------------------------")  
+                      print("      OUT OF STOCK      ")  
+                      print("-------------------------------")  
+                      print("Sorry, this item is out of stock.")  
                 else:  
-                   print("Sorry, this item is out of stock. :/")  
+                   # If the user does not have sufficient funds, print an error message  
+                   print("\n-------------------------------")  
+                   print("      INSUFFICIENT FUNDS   ")  
+                   print("-------------------------------")  
+                   print("Insufficient funds. Please deposit more money.")  
               else:  
-                # If user doesn't have sufficient funds, printing an error message  
-                print("Insufficient funds. Please deposit more money.")  
-           else:  
-              # If user's input is invalid, print an error message  
-              print("Invalid input. Please try again.")  
+                # If the user's input is invalid, print an error message  
+                print("\n-------------------------------")  
+                print("      INVALID INPUT      ")  
+                print("-------------------------------")  
+                print("Invalid input. Please try again.")  
+        else:  
+           print("\n-------------------------------")  
+           print("      INVALID CATEGORY    ")  
+           print("-------------------------------")  
+           print("Invalid category. Please try again.")  
+  
       else:  
-        # If user's input is invalid, print an error message  
+        # If the user's input is invalid, print an error message  
+        print("\n-------------------------------")  
+        print("      INVALID INPUT      ")  
+        print("-------------------------------")  
         print("Invalid input. Please try again.")  
-
-# Ending the code
+  
 if __name__ == "__main__":  
    main()
